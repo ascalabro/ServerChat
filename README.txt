@@ -1,0 +1,1 @@
+Linux requires the config.properties file to be located in this directory.

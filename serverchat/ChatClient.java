@@ -2,17 +2,30 @@ package serverchat;
 
 import java.net.*;
 import java.io.*;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ChatClient implements Runnable {
 
     private Socket socket = null;
     private Thread thread = null;
+    private String hostname;
+    public String username;
     private DataInputStream console = null;
     private DataOutputStream streamOut = null;
     private ChatClientThread client = null;
 
     public ChatClient(String serverName, int serverPort) {
-        System.out.println("Establishing connection. Please wait ...");
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ServerChat_Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Welcome to the ServerChat Client");
+        System.out.println("Your hostname is: " + this.hostname);
+        setUsername();
+        System.out.println("Establishing connection to chat server. Please wait ...");
         try {
             socket = new Socket(serverName, serverPort);
             System.out.println("Connected: " + socket);
@@ -77,12 +90,10 @@ public class ChatClient implements Runnable {
         client.stop();
     }
 
-    public static void main(String args[]) {
-        ChatClient client = null;
-        if (args.length != 2) {
-            System.out.println("Usage: java ChatClient host port");
-        } else {
-            client = new ChatClient(args[0], Integer.parseInt(args[1]));
-        }
+    public void setUsername() {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter your on-screen username: ");
+        this.username = input.nextLine();
+        System.out.println("Welcome " + this.username);
     }
 }
