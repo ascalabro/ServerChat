@@ -7,6 +7,7 @@ package serverchat;
 import java.lang.reflect.Constructor;
 import java.net.*;
 import java.io.*;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.*;
 
@@ -16,16 +17,21 @@ import java.util.logging.*;
  */
 public class ServerChat_Main {
 
+    
+
     /**
      * @param args the command line arguments
      */
     private String hostname;
     public String username;
-    private final static int DEFAULT_SERVER_PORT = 15750;
-    private final static String SERVER_IP = "192.168.0.9";
+    private static int DEFAULT_SERVER_PORT;
+    private static String SERVER_IP;
     private ChatClient client = null;
 
     public static void main(String[] args) {
+        // set initial values for properties from config properties file
+        setValuesFromConfig();
+        
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("server") && (ServerChat_Main.isInt(args[1]) && Integer.parseInt(args[1]) > 1023)) {
                 new ChatServer(Integer.parseInt(args[1]));
@@ -83,5 +89,33 @@ public class ServerChat_Main {
             return false;
         }
         return true;
+    }
+    
+    private static void setValuesFromConfig() {
+        Properties prop = new Properties();
+	InputStream input = null;
+ 
+	try {
+ 
+		input = new FileInputStream("config.properties");
+ 
+		// load a properties file
+		prop.load(input);
+ 
+		// get the property value and set it
+		SERVER_IP = prop.getProperty("server_ip");
+                DEFAULT_SERVER_PORT = Integer.parseInt(prop.getProperty("default_server_port_in"));
+                
+	} catch (IOException ex) {
+		ex.printStackTrace();
+	} finally {
+		if (input != null) {
+			try {
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
     }
 }
